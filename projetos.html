@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio - Análise de Dados</title>
+    <!-- Carregamento do Tailwind CSS para design e responsividade -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuração de fonte global e cores de fundo */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+            scroll-behavior: smooth; /* Rolagem suave ao clicar nos links de âncora */
+        }
+        /* Estilos básicos para o código para melhor visualização sem CSS externo */
+        .code-block {
+            background-color: #1e293b; /* Slate 800 */
+            color: #e2e8f0; /* Slate 200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        /* Classe para ajustar a posição de rolagem devido ao header fixo */
+        .scroll-offset {
+            scroll-margin-top: 6rem; /* Altura do header + margem */
+        }
+        .main-content {
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 1. NAVEGAÇÃO / CABEÇALHO FIXO -->
+    <header class="fixed top-0 left-0 w-full bg-white shadow-lg z-10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between h-auto md:h-16 py-2">
+                <!-- Logotipo/Nome -->
+                <div class="flex-shrink-0 mb-2 md:mb-0">
+                    <span class="text-xl font-bold text-indigo-600">Portfólio de Análise de Dados</span>
+                </div>
+
+                <!-- Menu de Navegação (Agora Responsivo por Flexbox/Wrap) -->
+                <div class="w-full md:w-auto">
+                    <div class="flex flex-wrap justify-center md:justify-end space-x-2 md:space-x-4">
+                        <!-- Links de Âncora HTML Puros -->
+                        <a href="index.html" class="nav-link text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150">Home</a>
+                        <a href="sobre.html" class="nav-link text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150">Sobre Mim</a>
+                        <a href="projetos.html" class="nav-link text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150">Projetos</a>
+                        <a href="contatos.html" class="nav-link text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150">Contato</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL DO CONTEÚDO -->
+    <main class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Padding superior para evitar que o conteúdo da Home fique atrás do header fixo -->
+        <div class="pt-[100px] md:pt-[80px]">
+
+        <!-- 4. PÁGINA DE PROJETOS -->
+        <section id="projetos" class="scroll-offset py-12">
+            <div class="py-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 border-b-2 border-indigo-500 pb-2">Projetos Pessoais</h2>
+
+                <!-- Cartão do Projeto 1: Análise Python -->
+                <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl mb-12 border-t-4 border-indigo-600">
+                    <h3 class="text-3xl font-bold text-indigo-700 mb-4">1. Acompanhamento de Vendas (Python)</h3>
+                    <p class="text-gray-700 mb-6">
+                        Projeto focado em acompanhar as vendas parciais usando Streamlit e Pandas (Python).
+                    </p>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Visualização de Resultados:</h4>
+
+                    <img 
+                        src="streamlit_python.jpeg" 
+                        alt="Gráfico de Acompanhamento de Vendas" 
+                        class="w-full h-auto rounded-lg mb-6 shadow-md"
+                    >
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Trecho de Código Python:</h4>
+                    <pre class="code-block text-sm">
+<code>
+df = carregar_dados()
+st.title(f"💸 Dashboard de Vendas - Black Friday (Atualizado: {pd.Timestamp.now().strftime('%H:%M:%S')})")
+
+if df.empty:
+    st.warning("Nenhum dado encontrado para o período.")
+else:
+    st.sidebar.header("Filtros")
+    
+    opcoes_canal = sorted(df['FILIAL_VENDA_CANAL'].unique())
+    
+    selecao_canal = st.sidebar.multiselect(
+        "Selecione o(s) Canal(is) de Venda:",
+        options=opcoes_canal,
+        default=opcoes_canal 
+    )
+
+    df_filtrado = df[df['FILIAL_VENDA_CANAL'].isin(selecao_canal)]
+    
+    # -----------------------------------------------
+
+    kpi1, kpi2, kpi3 = st.columns(3)
+
+    gmv = df_filtrado['VALOR_TOTAL'].sum()
+    
+    total_pedidos = df_filtrado['ID_PEDIDO'].nunique()
+    
+    ticket_medio = gmv / total_pedidos if total_pedidos > 0 else 0
+
+    kpi1.metric(
+        label="Receita Total (GMV)",
+        value=f"R$ {gmv:,.2f}"
+    )
+    kpi2.metric(
+        label="Pedidos Únicos",
+        value=f"{total_pedidos:,}"
+    )
+    kpi3.metric(
+        label="Ticket Médio (AOV)",
+        value=f"R$ {ticket_medio:,.2f}"
+    )
+
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Vendas por Dia de Faturamento")
+        vendas_dia = df_filtrado.groupby('DATA_FATURAMENTO')['VALOR_TOTAL'].sum().reset_index()
+        st.bar_chart(vendas_dia.set_index('DATA_FATURAMENTO'))
+
+    with col2:
+        st.subheader("Top 5 Produtos (por Receita)")
+        top_produtos = df_filtrado.groupby('DESC_PRODUTO')['VALOR_TOTAL'].sum().nlargest(5).sort_values(ascending=True)
+        st.bar_chart(top_produtos)
+
+    st.subheader("Visão Detalhada dos Itens Faturados")
+    st.dataframe(df_filtrado.sort_values('DATA_FATURAMENTO', ascending=False).head(20))
+</code></pre>
+
+                    <div class="mt-6">
+                        <a href="https://github.com/leorfarias/web-data-portfolio.git" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-150">
+                            &rarr; Ver demais projetos desenvolvidos em Python
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Cartão do Projeto 2: Otimização SQL -->
+                <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl border-t-4 border-indigo-600">
+                    <h3 class="text-3xl font-bold text-indigo-700 mb-4">2. Simulação de Distribuição de Produtos (SQL)</h3>
+                    <p class="text-gray-700 mb-6">
+                        A procedure simula uma distribuição de produtos para clientes de acordo com suas prioridades pré-definidas.
+                    </p>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Trecho de Código SQL:</h4>
+                    <pre class="code-block text-sm">
+<code>
+-- Trecho onde acontece o loop e realiza a simulação
+        BEGIN
+            SELECT @EstoqueD1=0, @EstoqueD2=0, @EstoqueD3=0, @EstoqueD4=0, @EstoqueD5=0, @EstoqueD6=0;
+
+            SELECT
+                @EstoqueD1 = ISNULL(D1, 0), @EstoqueD2 = ISNULL(D2, 0), @EstoqueD3 = ISNULL(D3, 0),
+                @EstoqueD4 = ISNULL(D4, 0), @EstoqueD5 = ISNULL(D5, 0), @EstoqueD6 = ISNULL(D6, 0)
+            FROM #EstoqueTemp
+            WHERE ID_PRODUTO = @IdProduto;
+
+            SET @AlocadoP1 = CASE WHEN @VE1 < @EstoqueD1 THEN @VE1 ELSE @EstoqueD1 END;
+            SET @AlocadoP2 = CASE WHEN @VE2 < @EstoqueD2 THEN @VE2 ELSE @EstoqueD2 END;
+            SET @AlocadoP3 = CASE WHEN @VE3 < @EstoqueD3 THEN @VE3 ELSE @EstoqueD3 END;
+            SET @AlocadoP4 = CASE WHEN @VE4 < @EstoqueD4 THEN @VE4 ELSE @EstoqueD4 END;
+            SET @AlocadoP5 = CASE WHEN @VE5 < @EstoqueD5 THEN @VE5 ELSE @EstoqueD5 END;
+            SET @AlocadoP6 = CASE WHEN @VE6 < @EstoqueD6 THEN @VE6 ELSE @EstoqueD6 END;
+
+            IF (@AlocadoP1 + @AlocadoP2 + @AlocadoP3 + @AlocadoP4 + @AlocadoP5 + @AlocadoP6) > 0
+            BEGIN
+                UPDATE #EstoqueTemp
+                SET
+                    D1 = D1 - @AlocadoP1, D2 = D2 - @AlocadoP2, D3 = D3 - @AlocadoP3,
+                    D4 = D4 - @AlocadoP4, D5 = D5 - @AlocadoP5, D6 = D6 - @AlocadoP6
+                WHERE ID_PRODUTO = @IdProduto;
+            END
+</code></pre>
+
+                    <div class="mt-6">
+                        <a href="https://github.com/leorfarias/web-data-portfolio.git" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-150">
+                            &rarr; Ver demais projetos desenvolvidos em SQL
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        </div> <!-- Fim do padding wrapper -->
+    </main>
+
+    <!-- 6. RODAPÉ -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-12">
+        <p>&copy; 2025 Leonardo Farias. Portfólio de Análise de Dados. Feito com HTML e CSS.</p>
+    </footer>
+
+</body>
+</html>
