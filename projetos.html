@@ -151,7 +151,7 @@ else:
                 </div>
 
                 <!-- Cartão do Projeto 2: Otimização SQL -->
-                <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl border-t-4 border-indigo-600">
+                <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl mb-12 border-t-4 border-indigo-600">
                     <h3 class="text-3xl font-bold text-indigo-700 mb-4">2. Simulação de Distribuição de Produtos (SQL)</h3>
                     <p class="text-gray-700 mb-6">
                         A procedure simula uma distribuição de produtos para clientes de acordo com suas prioridades pré-definidas.
@@ -193,6 +193,92 @@ else:
                         </a>
                     </div>
                 </div>
+
+            <!-- Cartão do Projeto 3: VBA -->
+                <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl mb-12 border-t-4 border-indigo-600">
+                    <h3 class="text-3xl font-bold text-indigo-700 mb-4">3. Automação de Processamento dos Dados no Banco de Dados</h3>
+                    <p class="text-gray-700 mb-6">
+                        Realiza a leitura dos dados, executa a procedure e armazena os dados atualizados no Excel.
+                    </p>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Trecho de Código VBA:</h4>
+                    <pre class="code-block text-sm">
+<code>
+objComando.CommandText = "SELECT * FROM W_RESULTADO_DISTRIBUICAO_EXPORTACAO" '
+    objComando.CommandType = 1 ' adCmdText
+    
+    Set objRecordset = objComando.Execute
+    
+    ' -- Processar os dados retornados pela View --
+    If Not objRecordset.EOF Then
+    
+        ' Tenta encontrar a tabela existente
+        On Error Resume Next
+        Set tbl = ws.ListObjects(nomeTabela)
+        On Error GoTo TratamentoErro
+
+        If tbl Is Nothing Then
+            ' A tabela não existe, então limpa a área e cria uma nova
+            ws.Range("B5").CurrentRegion.Clear
+            
+            ' Coloca os cabeçalhos das colunas, começando em B5
+            Dim i As Integer
+            For i = 0 To objRecordset.Fields.Count - 1
+                ws.Cells(5, i + 2).Value = objRecordset.Fields(i).Name
+            Next i
+            
+            ' Cola os dados a partir da célula B6
+            ws.Range("B6").CopyFromRecordset objRecordset
+            
+            ' Cria a tabela pela primeira vez
+            Set tbl = ws.ListObjects.Add(SourceType:=xlSrcRange, _
+                                         Source:=ws.Range("B5").CurrentRegion, _
+                                         XlListObjectHasHeaders:=xlYes)
+            tbl.Name = nomeTabela
+            tbl.TableStyle = "TableStyleMedium9"
+            
+        Else
+            ' A tabela já existe, então apenas atualiza os dados
+            
+            ' Limpa apenas o corpo de dados da tabela, mantendo os cabeçalhos
+            If Not tbl.DataBodyRange Is Nothing Then
+                tbl.DataBodyRange.ClearContents
+            End If
+            
+            ' Cola os novos dados na primeira célula do corpo da tabela (abaixo do cabeçalho)
+            tbl.HeaderRowRange.Offset(1, 0).Cells(1, 1).CopyFromRecordset objRecordset
+            
+            ' Redimensiona a tabela para o novo conjunto de dados
+            Set tblRange = ws.Range(tbl.HeaderRowRange.Cells(1, 1), _
+                                    tbl.HeaderRowRange.Cells(1, 1).End(xlDown).End(xlToRight))
+            tbl.Resize tblRange
+        End If
+        
+        ws.Columns.AutoFit ' Ajusta a largura das colunas
+        
+        MsgBox "Ação executada e tabela de dados atualizada com sucesso!", vbInformation
+    Else
+        ' Se não retornou dados, apenas limpa a tabela existente
+        On Error Resume Next
+        Set tbl = ws.ListObjects(nomeTabela)
+        If Not tbl Is Nothing Then
+            If Not tbl.DataBodyRange Is Nothing Then
+                tbl.DataBodyRange.ClearContents
+            End If
+        End If
+        On Error GoTo TratamentoErro
+        
+        MsgBox "A procedure foi executada, mas a view não retornou dados. A tabela foi limpa.", vbInformation
+    End If
+</code></pre>
+
+                    <div class="mt-6">
+                        <a href="https://github.com/leorfarias/web-data-portfolio.git" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-150">
+                            &rarr; Ver demais projetos desenvolvidos em VBA
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </section>
 
